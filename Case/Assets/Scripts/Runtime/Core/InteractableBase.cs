@@ -14,13 +14,15 @@ public abstract class InteractableBase : MonoBehaviour, InteractionSystem.Runtim
 
 [Header("Interaction")]
 [SerializeField] private Transform m_interactionPoint;
+[Header("UI")]
+[SerializeField] protected string m_promptText = "Interact";
 
 #endregion
 
 
 #region IInteractable
 public Transform InteractionPoint => m_interactionPoint != null ? m_interactionPoint : this.transform;
-
+public virtual string PromptText => m_promptText;
 public abstract void Interact(GameObject interactor);
 public virtual void OnFocus() { }
 

@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,8 @@ namespace InteractionSystem.Runtime.UI
         #region Fields
 
         [SerializeField] private GameObject m_root;
-        [SerializeField] private Text m_label;
+        [SerializeField] private  TextMeshProUGUI m_label;
+        
 
         #endregion
 

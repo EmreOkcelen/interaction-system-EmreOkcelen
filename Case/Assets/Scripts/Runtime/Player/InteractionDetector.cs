@@ -1,4 +1,5 @@
 using System.Linq;
+using InteractionSystem.Runtime.Core;
 using UnityEngine;
 
 namespace InteractionSystem.Runtime.Player
@@ -24,7 +25,8 @@ namespace InteractionSystem.Runtime.Player
 
         [Header("References")]
         [SerializeField] private Transform m_interactionOrigin; // usually player camera or player head
-
+        [Header("UI")]
+        [SerializeField] private UI.InteractionPrompt m_promptUI;
         [Header("Detection")]
         [SerializeField] private DetectionMode m_detectionMode = DetectionMode.RaycastCenter;
         [SerializeField] private float m_interactionRange = 2.5f;
@@ -38,8 +40,10 @@ namespace InteractionSystem.Runtime.Player
         [SerializeField] private float m_raycastRadius = 0.1f; // spherecast radius for more forgiving aim
 
         // current focused interactable
-        private InteractionSystem.Runtime.Core.IInteractable m_current;
-
+        private IInteractable m_current;
+        private IHoldable m_currentHoldable;
+        private float m_holdTimer;
+        private bool m_isHolding;
         #endregion
 
         #region Properties
@@ -86,6 +90,13 @@ namespace InteractionSystem.Runtime.Player
 
         private void UpdateFocus()
         {
+            if (m_isHolding && m_currentHoldable != null)
+        {
+            m_currentHoldable.OnHoldCancelled();
+            m_isHolding = false;
+            m_holdTimer = 0f;
+            m_currentHoldable = null;
+        }
             var found = DetectInteractables();
 
             var nearest = found
@@ -97,11 +108,17 @@ namespace InteractionSystem.Runtime.Player
                 m_current?.OnDefocus();
                 m_current = nearest;
                 m_current.OnFocus();
+
+                if (m_promptUI != null)
+                m_promptUI.Show(m_current.PromptText);
             }
             else if (nearest == null && m_current != null)
             {
                 m_current.OnDefocus();
                 m_current = null;
+
+                if (m_promptUI != null)
+                m_promptUI.Hide();
             }
         }
 
@@ -146,16 +163,64 @@ namespace InteractionSystem.Runtime.Player
             return (interactable.InteractionPoint != null) ? interactable.InteractionPoint.position : (interactable as MonoBehaviour).transform.position;
         }
 
-        private void HandleInput()
-        {
-            if (string.IsNullOrEmpty(m_interactionInput))
-                return;
+private void HandleInput()
+{
+    if (string.IsNullOrEmpty(m_interactionInput))
+        return;
 
-            if (Input.GetButtonDown(m_interactionInput) && m_current != null)
-            {
-                m_current.Interact(gameObject);
-            }
+    // HOLDABLE mı?
+    if (m_current is InteractionSystem.Runtime.Core.IHoldable holdable)
+    {
+        HandleHoldInput(holdable);
+        return;
+    }
+
+    // INSTANT / TOGGLE
+    if (Input.GetButtonDown(m_interactionInput) && m_current != null)
+    {
+        m_current.Interact(gameObject);
+    }
+}
+ private void HandleHoldInput(InteractionSystem.Runtime.Core.IHoldable holdable)
+{
+    // Hold START
+    if (Input.GetButtonDown(m_interactionInput))
+    {
+        m_isHolding = true;
+        m_holdTimer = 0f;
+        m_currentHoldable = holdable;
+
+        holdable.OnHoldStart(gameObject);
+    }
+
+    // Hold CONTINUE
+    if (Input.GetButton(m_interactionInput) && m_isHolding)
+    {
+        m_holdTimer += Time.deltaTime;
+
+        float progress = Mathf.Clamp01(m_holdTimer / holdable.HoldDuration);
+        holdable.OnHoldProgress(progress);
+
+        if (progress >= 1f)
+        {
+            m_isHolding = false;
+            m_currentHoldable = null;
+
+            holdable.OnHoldComplete(gameObject);
         }
+    }
+
+    // Hold CANCEL
+    if (Input.GetButtonUp(m_interactionInput) && m_isHolding)
+    {
+        m_isHolding = false;
+        m_holdTimer = 0f;
+
+        holdable.OnHoldCancelled();
+        m_currentHoldable = null;
+    }
+}
+
 
         #endregion
     }
