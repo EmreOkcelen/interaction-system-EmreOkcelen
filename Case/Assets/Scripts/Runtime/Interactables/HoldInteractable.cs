@@ -18,8 +18,16 @@ namespace InteractionSystem.Runtime.Interactables
         [SerializeField, Tooltip("Optional animator for open animation.")]
         private Animator m_animator;
 
+        [SerializeField] private string m_holdPrompt = "Hold E to Interact";
+
         #endregion
 
+        #region UI
+        
+        public override string PromptText => m_holdPrompt;
+
+        #endregion
+        
         #region IHoldable
 
         /// <inheritdoc/>
@@ -70,7 +78,7 @@ namespace InteractionSystem.Runtime.Interactables
 
         public override void Interact(GameObject interactor)
         {
-            throw new System.NotImplementedException();
+    // Hold interactables DO NOT use instant interact
         }
 
         #endregion

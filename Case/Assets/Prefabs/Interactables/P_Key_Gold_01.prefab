@@ -63,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 27e32002084aa524d9f4989b695a64f9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -98,9 +98,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_interactionPoint: {fileID: 0}
+  m_promptText: Press E to Pick Up Golden Key
   m_label: Interact
   m_mode: 0
-  m_keyId: GoldGate1
+  m_item: {fileID: 11400000, guid: 1189c8d8d17866b4e848383c0a0d4972, type: 2}
   m_deactivateOnPickup: 1
   m_animator: {fileID: 0}
   m_animatorTrigger: Press

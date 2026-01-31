@@ -35,7 +35,7 @@ namespace InteractionSystem.Runtime.Interactables
 
         [Header("Pickup (Pickup mode)")]
         [Tooltip("If non-empty and player has PlayerInventory, this keyId will be added on pickup.")]
-        [SerializeField] private string m_keyId = "GoldGate";
+        [SerializeField] private ItemData m_item;
         [SerializeField] private bool m_deactivateOnPickup = true;
 
         [Header("Button (Button mode)")]
@@ -111,32 +111,27 @@ namespace InteractionSystem.Runtime.Interactables
         /// Default: if interactor has PlayerInventory -> AddKey(m_keyId). Then deactivate or destroy depending on inspector.
         /// </summary>
         /// <param name="interactor">Interactor (player)</param>
-        protected virtual void HandlePickup(GameObject interactor)
+protected virtual void HandlePickup(GameObject interactor)
+{
+    if (m_item != null)
+    {
+        var inv = interactor.GetComponent<PlayerInventory>();
+        if (inv != null)
         {
-            if (!string.IsNullOrEmpty(m_keyId))
-            {
-                var inv = interactor.GetComponent<PlayerInventory>();
-                if (inv != null)
-                {
-                    inv.AddKey(m_keyId);
-                    Debug.Log($"[InstantInteractable] Added key '{m_keyId}' to {interactor.name}");
-                }
-                else
-                {
-                    Debug.LogWarning($"[InstantInteractable] Interactor {interactor.name} has no PlayerInventory to receive key '{m_keyId}'.");
-                }
-            }
-
-            if (m_deactivateOnPickup)
-            {
-                gameObject.SetActive(false);
-            }
-            else
-            {
-                Destroy(gameObject);
-            }
+            inv.AddItem(m_item);
+            Debug.Log($"[InstantInteractable] Added item '{m_item.displayName}' to {interactor.name}");
         }
+        else
+        {
+            Debug.LogWarning($"[InstantInteractable] Interactor {interactor.name} has no PlayerInventory.");
+        }
+    }
 
+    if (m_deactivateOnPickup)
+        gameObject.SetActive(false);
+    else
+        Destroy(gameObject);
+}   
         /// <summary>
         /// Handle button behaviour. Default: trigger animator (if assigned).
         /// Override to call remote systems programmatically.

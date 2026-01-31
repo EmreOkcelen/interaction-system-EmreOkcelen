@@ -16,6 +16,7 @@ public interface IInteractable
 /// If null, the object's transform will be used.
 /// </summary>
 Transform InteractionPoint { get; }
+string PromptText { get; }
 /// <summary>
 /// Called when the player triggers interaction.
 /// </summary>

@@ -11,23 +11,20 @@ namespace InteractionSystem.Runtime.Player
     {
         #region Fields
 
-        [SerializeField] private List<string> m_collectedKeys = new List<string>();
+        [SerializeField] private List<ItemData> m_items = new();
 
         #endregion
 
         #region API
-
-        public void AddKey(string keyId)
+       public void AddItem(ItemData item)
         {
-            if (!m_collectedKeys.Contains(keyId))
-                m_collectedKeys.Add(keyId);
+            if (!m_items.Contains(item))
+            m_items.Add(item);
         }
 
-        public bool HasKey(string keyId)
-        {
-            return m_collectedKeys.Contains(keyId);
-        }
+        public bool HasItem(ItemData item) => m_items.Contains(item);
 
+        public IReadOnlyList<ItemData> Items => m_items;
         #endregion
     }
 }

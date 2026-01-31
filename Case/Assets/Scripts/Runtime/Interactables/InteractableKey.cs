@@ -5,14 +5,15 @@ namespace InteractionSystem.Runtime.Interactables
 {
     public class InteractableKey : InteractableBase
     {
-        [SerializeField] private string m_keyId = "GoldGate";
+        [SerializeField] private ItemData m_keyItem;
+
         public override void Interact(GameObject interactor)
         {
             var inv = interactor.GetComponent<Player.PlayerInventory>();
             if (inv != null)
             {
-                inv.AddKey(m_keyId);
-                Debug.Log($"Key {m_keyId} picked up by {interactor.name}");
+                inv.AddItem(m_keyItem);
+                Debug.Log($"Key {m_keyItem} picked up by {interactor.name}");
                 gameObject.SetActive(false);
             }
         }

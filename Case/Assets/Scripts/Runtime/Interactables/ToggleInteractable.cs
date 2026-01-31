@@ -17,6 +17,11 @@ namespace InteractionSystem.Runtime.Interactables
 
         #endregion
 
+        #region UI
+        
+        public override string PromptText => m_isOn ? m_onLabel : m_offLabel;
+
+        #endregion
         #region IInteractable
 
         /// <inheritdoc/>
